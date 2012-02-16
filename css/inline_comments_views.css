@@ -1,0 +1,24 @@
+.comment-click, .comment-link {
+  display: block;
+  float: left;
+  padding-right: 1em;
+}
+
+.node-nid, .user-uid {
+  display: none;
+}
+
+.views-row {
+  background: #eee;
+  margin: 2em 0;
+  padding: 2em 2em 4em;
+  box-shadow: 3px 3px 5px 2px #ccc;
+  border-radius: 5px;
+}
+
+.comment-group .comment {
+  margin: 4em 0 2em;
+  background: #ddd;
+  padding: 1em;
+  box-shadow: 3px 3px 5px 1px #ccc;
+}

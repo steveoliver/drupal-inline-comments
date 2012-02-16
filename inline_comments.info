@@ -1,0 +1,5 @@
+name = Inline Comments
+description = A views handler that lets you display comments with ajax retrieval and post comments inline via ajax.
+dependencies[] = comment
+dependencies[] = views
+core = 6.x
