@@ -3,6 +3,7 @@
 class inline_comments_handler_field_inline_comments extends views_handler_field {
   var $output; 
   function render($values) {
+      global $user;
       drupal_add_css(drupal_get_path('module', 'inline_comments') . '/css/inline_comments_views.css');
 			drupal_add_js(drupal_get_path('module', 'inline_comments') . '/js/loadComments.js');
 			drupal_add_js(drupal_get_path('module', 'inline_comments') . '/js/reformatPager.js');
@@ -12,7 +13,7 @@ class inline_comments_handler_field_inline_comments extends views_handler_field 
 			drupal_add_js(drupal_get_path('module', 'inline_comments') . '/js/ajaxPoster.js');
 			drupal_add_js(drupal_get_path('module', 'inline_comments') . '/js/comment_toggle.js');
 			$output = '<div class="node-nid">'  .  $values->nid .  '</div>';
-			$output .= '<div class="user-uid">'  .  $values->users_uid .  '</div>';
+			$output .= '<div class="user-uid">'  .  $user->uid .  '</div>';
 			if(user_access('access comments')){
 			  switch($values->node_comment_statistics_comment_count){
           case 0:
