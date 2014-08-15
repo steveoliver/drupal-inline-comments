@@ -60,48 +60,48 @@ inlineCommentsAjaxCommentEdit.prototype.callAjax = function(context) {
 
     // Clear out the comment form for next usage.
     $('#edit-comment').attr('value', '');
-      $.ajax({
-        type: $$.ajaxtype,
-        url: $$.url,
-        data: $$.formdata,
-        success: function(res) {
-          $$.result = Drupal.parseJson(res);
-          data = $($$.result.data);
-          $$.targetEle.html(data);
-          $$.targetEle.reformatPager($$.targetEle);
-          var commentContainer = $$.commentform.parents('.views-row').find('.views-field-comment-count a.inline-comments-loader-click');
-          if (commentContainer.length == 0) {
-            commentContainer = $$.commentform.parents('.views-row').find('.views-field-comment-count span');
-          }
-          var commentGroup = $$.commentform.parents('.views-row').find('.comment-group');
-          var numcomments = commentContainer.text();
-          var regex = /([0-9]+) Comment/i;
-          var params = numcomments.match(regex);
-          if (params) {
-            var editing = ($($$).attr('action').match(/edit_save/).length == 0);
-            var NewNumComments = (editing) ? Number(params[1]) + 1 : Number(params[1]);
-            if (NewNumComments == 1) {
-              $$.commentform.parents('.views-row').find('.views-field-comment-count').addClass('views-field-comment-count ajaxloaded');
-              commentGroup.show();
-              var nid = $$.commentform.parents('.views-row').find('.views-field-nid span').text();
-              commentContainer.wrap('<a href="/node/' + nid + '" class="inline-comments-loader-click"/></a>');
-            }
-            commentContainer.text('View ' + NewNumComments + ' Comments');
-            $('#edit-comment').attr('value', '');
-            if ($$.slideDown == true) {
-              $$.commentform.slideDown('slow');
-            } else {
-              $$.commentform.parents('.comment-form').remove();
-            }
-            $('.totalcharsused').text('0');
-          }
-          Drupal.attachBehaviors();
-        },
-        error: function() {
-          alert('ajax error');
-          e.preventDefault();
+    $.ajax({
+      type: $$.ajaxtype,
+      url: $$.url,
+      data: $$.formdata,
+      success: function(res) {
+        $$.result = Drupal.parseJson(res);
+        data = $($$.result.data);
+        $$.targetEle.html(data);
+        $$.targetEle.inlineCommentsReformatPager($$.targetEle);
+        var commentContainer = $$.commentform.parents('.views-row').find('.views-field-comment-count a.inline-comments-loader-link');
+        if (commentContainer.length == 0) {
+          commentContainer = $$.commentform.parents('.views-row').find('.views-field-comment-count span');
         }
-      });
-      e.preventDefault();
+        var commentGroup = $$.commentform.parents('.views-row').find('.inline-comments-comment-group');
+        var numcomments = commentContainer.text();
+        var regex = /([0-9]+) Comment/i;
+        var params = numcomments.match(regex);
+        if (params) {
+          var editing = ($($$).attr('action').match(/edit_save/).length == 0);
+          var NewNumComments = (editing) ? Number(params[1]) + 1 : Number(params[1]);
+          if (NewNumComments == 1) {
+            $$.commentform.parents('.views-row').find('.views-field-comment-count').addClass('views-field-comment-count ajaxloaded');
+            commentGroup.show();
+            var nid = $$.commentform.parents('.views-row').find('.views-field-nid span').text();
+            commentContainer.wrap('<a href="/node/' + nid + '" class="inline-comments-loader-link"/></a>');
+          }
+          commentContainer.text('View ' + NewNumComments + ' Comments');
+          $('#edit-comment').attr('value', '');
+          if ($$.slideDown == true) {
+            $$.commentform.slideDown('slow');
+          } else {
+            $$.commentform.parents('.comment-form').remove();
+          }
+          $('.totalcharsused').text('0');
+        }
+        Drupal.attachBehaviors();
+      },
+      error: function() {
+        alert('ajax error');
+        e.preventDefault();
+      }
+    });
+    e.preventDefault();
   });
 };

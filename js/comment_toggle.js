@@ -42,10 +42,28 @@
     });
 
     // Binds inline ajax editing to EDIT links.
+    // THIS ONE IS THE ONE THAT MAKES IT ALL WORK!
     $('ul.links li.comment_edit a').unbind('click').bind('click', function() {
-      // options['targetEle'] = '...'; ?
-      $(this).inlineCommentsAlterEditLinks();
+
+      // Open expanded comments if not expanded already
+      var row =  $(this).parents('.views-row');
+      var commentloader = row.find('.inline-comments-loader-link');
+      var commentgroup = row.find('.inline-comments-comment-group');
+      if (commentloader) {
+        if (commentgroup.is(':hidden') || commentgroup.length == 0) {
+          commentloader.click();
+        }
+      }
+      var reply = row.find('.comment-form');
+      if (reply.length == 0 ) {
+        options['targetEle'] = $(this).parents('.views-row').find('.inline-comments-comment-group');
+        $(this).inlineCommentsAlterEditLinks(options);
+      }
+
       return false;
+//      // options['targetEle'] = '...'; ?
+//      $(this).inlineCommentsAlterEditLinks();
+//      return false;
     });
 
     // Adds functionality to the Close link(s).
@@ -78,12 +96,14 @@
     if ($('body.page-user').length > 0) {
       options['targetEle'] = $('.panel-pane.pane-node-comments .inner');
     }
-    $('#comment-form', context).inlineCommentsBindAjaxReplySubmit(options);
+//    $('#comment-form', context).inlineCommentsBindAjaxReplySubmit(options);
 //    $('#comment-form[action^="/comment/reply"]', context).inlineCommentsBindAjaxReplySubmit(options);
-//    $('#comment-form[action^="/ajax/inline_comments/edit_save"]', context).inlineCommentsBindAjaxEditSubmit(options);
-//    $('#comment-form', context).inlineCommentsBindAjaxReplySubmit(options, function() {
+//    $('#comment-form[action^="/ajax/inline_comments/edit"]', context).inlineCommentsBindAjaxEditSubmit(options, function() {
 //      Drupal.attachBehaviors();
 //    });
+    $('#comment-form', context).inlineCommentsBindAjaxReplySubmit(options, function() {
+      Drupal.attachBehaviors();
+    });
 
     // Transforms comment count views fields into inline commenting links.
     $('.views-field-comment-count span a').each( function(){
