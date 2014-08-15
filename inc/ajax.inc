@@ -1,7 +1,10 @@
 <?php 
 $GLOBALS['uri'];
-function inline_comments_add_comments(){
-	
+
+/**
+ * Page callback for adding new inline comments.
+ */
+function inline_comments_add_comments() {
 	//clean data and add comment to db
 	$uid = check_plain($_POST['uid']);
 	$nid = check_plain($_POST['nid']);
@@ -27,15 +30,54 @@ function inline_comments_add_comments(){
 	$conf['order'] = _comment_get_display_setting('sort', $node);
 	$conf['comments_per_page'] = _comment_get_display_setting('comments_per_page', $node);
 	$comments = inline_comments_comment_render($node, $conf, $action);
+
 	drupal_json(array( 'data' => $comments));
-	
 }
 
-function inline_comments_get_comments(){
-	//clean data 
-	
+/**
+ * Callback for inline comment editing menu item.
+ *
+ * @param int $cid
+ *   The comment id.
+ */
+function inline_comments_edit_comment_load($cid) {
+  // Handle form AND submit
+  global $base_path;
+  global $user;
+  ctools_include('ajax');
+  $comment = _comment_load($cid);
+  $node = node_load($comment->nid);
+  if (((user_access('edit own comments') && $comment->uid == $user->uid) || user_access('administer comments'))
+      && $node->comment != COMMENT_NODE_DISABLED
+      && (variable_get('comment_form_location_' . $node->type, COMMENT_FORM_BELOW) == COMMENT_FORM_BELOW)) {
+    $form = drupal_get_form("comment_form", (array) $comment);
+  }
+
+  drupal_json(array('data' => $form));
+}
+
+/**
+ * Callback for saving a comment edit.
+ * @param $cid
+ */
+function inline_comments_edit_comment_save($cid) {
+  $comment = _comment_load($cid);
+  $comment->comment = check_plain($_POST['comment']);
+  if ($cid = comment_save((array) $comment)) {
+    $value = 'yeah';
+  }
+  else {
+    $value = 'no';
+  }
+
+  drupal_json(array('data' => $value));
+}
+
+/**
+ * Returns JSON comments for a given node id.
+ */
+function inline_comments_get_comments() {
 	$nid = check_plain(arg(3));
-	
 	ctools_include('context');
 	ctools_include('plugins');
 	ctools_plugin_load_function('ctools', 'content_types', 'node_comments', 'ctools_comment_render');
@@ -48,18 +90,18 @@ function inline_comments_get_comments(){
 	$comments = inline_comments_comment_render($node, $conf);
 
 	drupal_json(array( 'data' => $comments));
-	
 }
 
-
-function inline_comments_get_comment_form(){
-	//clean data 
-	if(module_exists('comment')){
+/**
+ * Returns JSON of comments form.
+ */
+function inline_comments_get_comment_form() {
+	if (module_exists('comment')) {
 	  $form = array();
   	$nid = check_plain(arg(3));
   	$pid = check_plain(arg(4));
   	$node = array('nid' => $nid);
-  	$output = drupal_get_form('comment_form', $node, $title);
+  	$output = drupal_get_form('comment_form', $node);
   	drupal_json(array( 'data' => $output));
 	}
 	else {
@@ -67,8 +109,15 @@ function inline_comments_get_comment_form(){
 	}	
 }
 
+/**
+ * Callback for inline comment rendering.
+ *
+ * @param $node
+ * @param $conf
+ * @param null $original_uri
+ * @return string
+ */
 function inline_comments_comment_render($node, $conf, $original_uri = NULL) {
-
   $output = '';
   if (!$node->comment) {
     return;
@@ -81,11 +130,8 @@ function inline_comments_comment_render($node, $conf, $original_uri = NULL) {
   // Multiple comment view
   $query_count = 'SELECT COUNT(*) FROM {comments} c WHERE nid = %d';
 
-    //We run drupal version > 6.13, users table has signature_format column
-    $query = 'SELECT c.cid AS cid, c.pid, c.nid, c.subject, c.comment, c.format, c.timestamp, c.name, c.mail, c.homepage, u.uid, u.name AS registered_name, u.picture, u.signature, u.signature_format, u.data, c.thread, c.status, parent_user.uid as parent_uid, parent_user.data as parent_data, parent_user.name as parent_name, parent_user.picture as parent_picture FROM {comments} c INNER JOIN {users} u ON c.uid = u.uid LEFT OUTER JOIN {comments} parent ON c.pid = parent.cid LEFT OUTER JOIN {users} parent_user ON parent.uid = parent_user.uid WHERE c.nid = %d';
-
- 
-
+  //We run drupal version > 6.13, users table has signature_format column
+  $query = 'SELECT c.cid AS cid, c.pid, c.nid, c.subject, c.comment, c.format, c.timestamp, c.name, c.mail, c.homepage, u.uid, u.name AS registered_name, u.picture, u.signature, u.signature_format, u.data, c.thread, c.status, parent_user.uid as parent_uid, parent_user.data as parent_data, parent_user.name as parent_name, parent_user.picture as parent_picture FROM {comments} c INNER JOIN {users} u ON c.uid = u.uid LEFT OUTER JOIN {comments} parent ON c.pid = parent.cid LEFT OUTER JOIN {users} parent_user ON parent.uid = parent_user.uid WHERE c.nid = %d';
   $query_args = array($node->nid);
   if (!user_access('administer comments')) {
     $query       .= ' AND c.status = %d';
@@ -115,7 +161,7 @@ function inline_comments_comment_render($node, $conf, $original_uri = NULL) {
 	$pages = ceil($count / $comments_per_page);
 	//$pages = 9;
   // Start a form, for use with comment control.
-   $result = pager_query($query, $comments_per_page, 0, $query_count, $query_args);
+  $result = pager_query($query, $comments_per_page, 0, $query_count, $query_args);
 
   $divs = 0;
   $last_depth = 0;
@@ -163,5 +209,6 @@ function inline_comments_comment_render($node, $conf, $original_uri = NULL) {
   if (!empty($conf['anchor'])) {
     $output = '<div id="comments">' . $output . '</div>';
   }
+
   return $output;
 }

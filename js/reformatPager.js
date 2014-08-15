@@ -1,10 +1,10 @@
 (function($) {
-	jQuery.fn.reformatPager = function(options) {
+	jQuery.fn.inlineCommentsReformatPager = function(options) {
 		var $$ = $(this);
 		$$.options = options;
 		return this.each(function(index) {
 			jQuery.extend($$, {
-				ele: $('.comment-group')
+				ele: $('.inline-comments-comment-group')
 			},
 			$$.options);
 			var pagerText = 'View More Comments ...';

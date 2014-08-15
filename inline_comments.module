@@ -1,68 +1,101 @@
 <?php
+/**
+ * @file
+ * Inline Comments module file.
+ */
 
 /**
- * Implementation of hook_hlp().
+ * Implements hook_perm()
  */
-function inline_comments_help() {
-  $output = '';  //declare your output variable
-  switch ($path) {
-    case "admin/help#inline_comments":
-      $output = '<p>'.  t("Inline comments is a view handler let you display  and make comments inline via ajax ") .'</p>';
-      break;
-  }
-  return $output;
-}
-
-
-/**
- * Implementation hook_views_api
- */
-function inline_comments_views_api() {
+function inline_comments_perm() {
+  // Instead of https://www.drupal.org/node/290246#comment-4885308.
   return array(
-    'api' => 2,
-    'path' => drupal_get_path('module', 'inline_comments') . '/inc',
+    'edit own comments'
   );
 }
 
-
 /**
-  * Implementation of hook_menu()
-  */
-
+ * Implements hook_menu()
+ */
 function inline_comments_menu() {
+  $items = array();
   $items['ajax/inline_comments/add_comments'] = array(
     'title' => t('Add Inline Comments'),
-		'type' => MENU_CALLBACK,
-		'file' => 'inc/ajax.inc',
+    'type' => MENU_CALLBACK,
+    'file' => 'inc/ajax.inc',
     'page callback' => 'inline_comments_add_comments',
     'access arguments' => array('post comments'),
   );
+  $items['ajax/inline_comments/edit_load/%'] = array(
+    'page callback' => 'inline_comments_edit_comment_load',
+    'access callback' => 'user_access',
+    'access arguments' => array('edit own comments'),
+    'page arguments' => array(3),
+    'type' => MENU_CALLBACK,
+    'file' => 'inc/ajax.inc',
+  );
+  $items['ajax/inline_comments/edit_save/%'] = array(
+    'page callback' => 'inline_comments_edit_comment_save',
+    'access callback' => 'user_access',
+    'access arguments' => array('edit own comments'),
+    'page arguments' => array(3),
+    'type' => MENU_CALLBACK,
+    'file' => 'inc/ajax.inc',
+  );
+  $items['ajax/inline_comments/delete/%'] = array(
+    'page callback' => 'inline_comments_delete_comment',
+    'access callback' => 'user_access',
+    'access arguments' => array('administer comments'), // 'delete own comments'??
+    'page arguments' => array(3),
+    'type' => MENU_CALLBACK,
+    'file' => 'inc/ajax.inc',
+  );
 
-	$items['ajax/inline_comments/get_comments/%'] = array(
+  $items['ajax/inline_comments/get_comments/%'] = array(
     'title' => t('Get Inline Comments'),
-		'type' => MENU_CALLBACK,
-		'file' => 'inc/ajax.inc',
+    'type' => MENU_CALLBACK,
+    'file' => 'inc/ajax.inc',
     'page callback' => 'inline_comments_get_comments',
     'access arguments' => array('access comments'),
   );
   $items['ajax/inline_comments/get_comment_form/%'] = array(
     'title' => t('Get Inline Comments'),
-		'type' => MENU_CALLBACK,
-		'file' => 'inc/ajax.inc',
+    'type' => MENU_CALLBACK,
+    'file' => 'inc/ajax.inc',
     'page callback' => 'inline_comments_get_comment_form',
     'access arguments' => array('access comments'),
   );
   return $items;
 }
 
-
-//function inline_comments_theme_registry_alter(&$theme_registry) {
-//  if (!empty($theme_registry['comment'])) {
-//    $theme_registry['comment']['function'] = 'inline_comments_comment';
-//  }
-//}
-
-
+/**
+ * Implements hook_comment()
+ *
+ * @param $comment
+ */
 function inline_comments_comment(&$comment) {
-    unset($comment->subject);
+  unset($comment->subject);
+}
+
+/**
+ * Implements hook_help()
+ */
+function inline_comments_help($path) {
+  $output = '';  //declare your output variable
+  switch ($path) {
+    case "admin/help#inline_comments":
+      $output = '<p>' . t("Inline comments is a view handler let you display and make comments inline via ajax.") . '</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Implements hook_views_api()
+ */
+function inline_comments_views_api() {
+  return array(
+      'api' => 2,
+      'path' => drupal_get_path('module', 'inline_comments') . '/inc',
+  );
 }

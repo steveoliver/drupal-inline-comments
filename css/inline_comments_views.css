@@ -1,4 +1,4 @@
-.comment-click, .comment-link {
+.inline-comments-loader-link, .comment-link {
   display: block;
   float: left;
   padding-right: 1em;
@@ -16,7 +16,7 @@
   border-radius: 5px;
 }
 
-.comment-group .comment {
+.inline-comments-comment-group .comment {
   margin: 4em 0 2em;
   background: #ddd;
   padding: 1em;

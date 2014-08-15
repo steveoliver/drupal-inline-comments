@@ -1,10 +1,10 @@
 (function($) { // wrapping $ jQuery alias in a local function to allow compatibilty with other libraries
-	jQuery.fn.loadPager = function(options) {
+	jQuery.fn.inlineCommentsLoadPager = function(options) {
 		return this.each(function(index) {
 		  var $$ = $(this);
       var loadlink = $$.attr('href');
     	$$.fadeOut('fast');
-    	var commentgroup = $$.parents('.comment-group');
+    	var commentgroup = $$.parents('.inline-comments-comment-group');
     	commentgroup = $(commentgroup);
     	var loading = $$.parents('.spinner');
     	$(loading).fadeIn('fast');
@@ -18,7 +18,7 @@
     			$(loading).fadeOut('fast');
     			var options = {};
 					options['ele'] = commentgroup;
-    			commentgroup.reformatPager(options);
+    			commentgroup.inlineCommentsReformatPager(options);
     			Drupal.attachBehaviors(commentgroup);
     		}
     	});
