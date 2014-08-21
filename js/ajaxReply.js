@@ -1,4 +1,47 @@
 (function($) {
+
+  // Alters comment reply form links.
+  $.fn.inlineCommentsAlterReplyLinks = function(options) {
+    var defaults = {
+      content: ''
+    };
+    options = $.extend(defaults, options);
+    return this.each(function(index) {
+      var $$ = $(this);
+      //$('.comment-form').remove();
+      var hreflink = $$.attr('href');
+      var regex = /\/comment\/reply\/([0-9]+)/i;
+      //var regex = /(comment)/
+      var params = hreflink.match(regex);
+      var theurl = '/ajax/inline_comments/get_comment_form/' + params[1]; //+ '/' + params[2];
+      var row =  $$.parents('.views-row');
+      row = $(row);
+      var comment = row.find('.inline-comments-comment-group');
+      comment = $(comment);
+      $('<div class="comment-form comment-reply-form"></div>').insertBefore(comment).hide();
+      var cform = row.find('.comment-reply-form');
+      cform = $(cform);
+      $.ajax({
+        type: 'GET',
+        url: theurl,
+        success: function(res) {
+          var result = Drupal.parseJson(res);
+          cform.append(result.data).show();
+          cform.prepend(options.content);
+          var counter = $("<div>You have used <span class=\'totalcharsused\'>0</span> characters</div>");
+          cform.find('.description').append(counter);
+          cform.find('#edit-comment').addClass('ajaxComments');
+          var closeLink = $('<a href=\'#\' class=\'formcloselink\'>X Close</a>');
+          cform.append(closeLink);
+          Drupal.attachBehaviors(cform);
+          cform.find('#edit-comment').val('').keyup();
+          cform.find('.description div').append(' including reply quotes');
+        }
+      });
+    });
+  };
+
+  // Binds ajax functionality to comment reply form button.
   $.fn.inlineCommentsBindAjaxReplySubmit = function(options) {
     var $$ = $(this);
     $$.options = options;
@@ -7,8 +50,10 @@
       this.inlineCommentsAjaxReply.callAjax();
     });
   };
+
 })(jQuery);
 
+//
 function inlineCommentsAjaxCommentReply(options) {
   var $$ = this;
   console.log($$);
@@ -19,14 +64,13 @@ function inlineCommentsAjaxCommentReply(options) {
     action: $('#comment-form').attr('action'),
     nid: $('#comment-form').parents('.views-row').find('.node-nid').text(),
     uid: $('#comment-form').parents('.views-row').find('.user-uid').text(),
-    cid: '000',
     targetEle: $('#comments'),
     url: '/ajax/inline_comments/add_comments',
     slideDown: false,
     ajaxtype: 'POST'
   }, options);
   if (this.targetEle.size() == 0) {
-    this.targetEle = $$.commentform.parents('.comment-form'); // get the .inline-comments-comment-group
+    this.targetEle = $$.commentform.parents('.comment-reply-form'); // get the .inline-comments-comment-group
   }
   $('#comment-form').parents('.views-row').find('#edit-preview').remove();
   $('#comment-form').find('fieldset').remove();
@@ -38,15 +82,15 @@ function inlineCommentsAjaxCommentReply(options) {
     'comment_text': $(ctext).attr('value'),
     'nid': $$.nid,
     'uid': $$.uid,
-    'cid': $$.cid,
     'action': $$.action
   };
 };
 
+//
 inlineCommentsAjaxCommentReply.prototype.callAjax = function(context) {
   var $$ = this;
 
-
+  // Custom submit handler for comment reply forms.
   $$.commentform.submit(function(e) {
     var clength = $$.comment_text.attr('value').length;
     var quotation = $$.comment_text.parents('form#comment-form').prev('.comment_quote');
@@ -59,7 +103,9 @@ inlineCommentsAjaxCommentReply.prototype.callAjax = function(context) {
     $$.formdata['comment_text'] = commentplusquote; // set here to get value when submit is called NOT document.ready
 
     // Clear out the comment form for next usage.
-    // $('#edit-comment').attr('value', '');
+    $('#edit-comment').attr('value', '');
+
+    // Make AJAX call.
     $.ajax({
       type: $$.ajaxtype,
       url: $$.url,
@@ -91,7 +137,7 @@ inlineCommentsAjaxCommentReply.prototype.callAjax = function(context) {
           if ($$.slideDown == true) {
             $$.commentform.slideDown('slow');
           } else {
-            $$.commentform.parents('.comment-form').remove();
+            $$.commentform.parents('.comment-reply-form').remove();
           }
           $('.totalcharsused').text('0');
         }

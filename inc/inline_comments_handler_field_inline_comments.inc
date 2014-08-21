@@ -11,9 +11,7 @@ class inline_comments_handler_field_inline_comments extends views_handler_field 
     drupal_add_js($path . '/js/loadComments.js');
 //    drupal_add_js($path . '/js/reformatPager.js');
     drupal_add_js($path . '/js/loadPager.js');
-    drupal_add_js($path . '/js/reply.js');
     drupal_add_js($path . '/js/ajaxReply.js');
-    drupal_add_js($path . '/js/edit.js');
     drupal_add_js($path . '/js/ajaxEdit.js');
     // drupal_add_js(drupal_get_path('module', 'inline_comments') . '/js/charCount.js');
     drupal_add_js($path . '/js/ajax_comments.js');

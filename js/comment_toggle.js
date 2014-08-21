@@ -32,7 +32,7 @@
           commentloader.click();
         }
       }
-      var reply = row.find('.comment-form');
+      var reply = row.find('.comment-reply-form');
       if (reply.length == 0 ) {
         options['targetEle'] = $(this).parents('.views-row').find('.inline-comments-comment-group');
         $(this).inlineCommentsAlterReplyLinks(options);
@@ -98,10 +98,10 @@
     }
 //    $('#comment-form', context).inlineCommentsBindAjaxReplySubmit(options);
 //    $('#comment-form[action^="/comment/reply"]', context).inlineCommentsBindAjaxReplySubmit(options);
-//    $('#comment-form[action^="/ajax/inline_comments/edit"]', context).inlineCommentsBindAjaxEditSubmit(options, function() {
+//    $('.comment-edit-form #comment-form', context).inlineCommentsBindAjaxEditSubmit(options, function() {
 //      Drupal.attachBehaviors();
 //    });
-    $('#comment-form', context).inlineCommentsBindAjaxReplySubmit(options, function() {
+    $('.comment-reply-form #comment-form', context).inlineCommentsBindAjaxReplySubmit(options, function() {
       Drupal.attachBehaviors();
     });
 
@@ -126,22 +126,22 @@
     });
 
     // I don't think this is used (the class doesn't exist in module codebase).
-    $('.reply_link').click( function(e){
-      e.preventDefault();
-      comment_content = $(this).parents('.links').prev().html();
-      submitted =  $(this).parents('.links').prev().prev().html();
-      //html_comment = "<!-- Add your reply below this line  -->";
-      quote = "<div class='comment_quote'>" + submitted  + comment_content + "</div>";
-      re = /\n/gi;
-      quote =  quote.replace(re, '');
-      quote = quote + '\n';
-      addcomment =  $(this).parents('.views-row').find('.comment-form').length;
-      if(addcomment == 0){
-        $(this).inlineCommentsAjaxReply({
-          content: quote
-        });
-      }
-    });
+//    $('.reply_link').click( function(e){
+//      e.preventDefault();
+//      comment_content = $(this).parents('.links').prev().html();
+//      submitted =  $(this).parents('.links').prev().prev().html();
+//      //html_comment = "<!-- Add your reply below this line  -->";
+//      quote = "<div class='comment_quote'>" + submitted  + comment_content + "</div>";
+//      re = /\n/gi;
+//      quote =  quote.replace(re, '');
+//      quote = quote + '\n';
+//      addcomment =  $(this).parents('.views-row').find('.comment-reply-form').length;
+//      if(addcomment == 0){
+//        $(this).inlineCommentsAjaxReply({
+//          content: quote
+//        });
+//      }
+//    });
   };
 
 })(jQuery);

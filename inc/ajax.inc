@@ -40,8 +40,7 @@ function inline_comments_add_comments() {
  * @param int $cid
  *   The comment id.
  */
-function inline_comments_edit_comment_load($cid) {
-  // Handle form AND submit
+function inline_comments_edit_comment($cid) {
   global $base_path;
   global $user;
   ctools_include('ajax');

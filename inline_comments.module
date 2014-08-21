@@ -50,7 +50,6 @@ function inline_comments_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'inc/ajax.inc',
   );
-
   $items['ajax/inline_comments/get_comments/%'] = array(
     'title' => t('Get Inline Comments'),
     'type' => MENU_CALLBACK,
@@ -66,15 +65,6 @@ function inline_comments_menu() {
     'access arguments' => array('access comments'),
   );
   return $items;
-}
-
-/**
- * Implements hook_comment()
- *
- * @param $comment
- */
-function inline_comments_comment(&$comment) {
-  unset($comment->subject);
 }
 
 /**
@@ -98,4 +88,32 @@ function inline_comments_views_api() {
       'api' => 2,
       'path' => drupal_get_path('module', 'inline_comments') . '/inc',
   );
+}
+
+//function inline_comments_theme_registry_alter(&$theme_registry) {
+//  if (!empty($theme_registry['comment'])) {
+//    $theme_registry['comment']['function'] = 'inline_comments_comment';
+//  }
+//}
+
+/**
+ * Implements hook_link_alter()
+ */
+//function inline_comments_link_alter(&$links, $node, $comment) {
+//  if (!empty($comment) && $node->type == 'post') {
+//    // Alter comment edit links.
+//    $links['comment_edit']['href'] = 'ajax/inline_comments/edit/' . $comment->cid;
+//    $links['comment_edit']['attributes']['class'] = 'use-ajax';
+//    // Alter comment delete links.
+//    // $links['comment_delete']['href'] = 'ajax/inline_comments/delete' . $comment->cid;
+//  }
+//}
+
+/**
+ * Implements hook_comment()
+ *
+ * @param $comment
+ */
+function inline_comments_comment(&$comment) {
+    unset($comment->subject);
 }

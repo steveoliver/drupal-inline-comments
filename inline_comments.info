@@ -3,3 +3,9 @@ description = A views handler that lets you display comments with ajax retrieval
 dependencies[] = comment
 dependencies[] = views
 core = 6.x
+; Information added by drupal.org packaging script on 2012-02-20
+version = "6.x-1.0-beta1"
+core = "6.x"
+project = "inline_comments"
+datestamp = "1329756942"
+
